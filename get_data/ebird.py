@@ -28,7 +28,7 @@ def writeRecents(hotspots:list):
     with open('out.json', 'w') as f:    
         f.write(data)
 
-#writeRecents(hotspots)
+writeRecents(hotspots)
 
 with open('out.json', 'r') as f:
     data = json.load(f)
@@ -37,6 +37,3 @@ print('Total recent observations:', len(data))
 print('First ten species:\n')
 for name in [obs['comName'] for obs in data[0:11]]:
     print(name)
-
-
-
