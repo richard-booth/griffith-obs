@@ -1,10 +1,26 @@
 //Place id: 155264
-
-
 const authorContainer = document.getElementById('obs-accordion');
 const loadMoreBtn = document.getElementById('load-more-btn');
 const hotspot = 'L1041285';
-document.getElementById('title').innerHTML+= hotspot;
+
+function get_Icon(tax){
+  switch(tax){
+    case "Plantae":
+      return '<i class="fa-solid fa-leaf"></i>';
+      break;
+    case "Insecta":
+      return '<i class="fa-solid fa-bugs"></i>';
+      break;
+    case "Mammalia":
+      return '<i class="fa-solid fa-paw"></i>';
+      break;
+    case "Reptilia":
+      return '<i class="fa-solid fa-worm"></i>';
+      break;
+    default:
+      return '<i class="fa-solid fa-dragon"></i>';
+  }
+}
 
 //REQUEST HEADERS AND OPTIONS
 var myHeaders = new Headers();
@@ -49,8 +65,49 @@ const fetchMoreAuthors = () => {
   };
 
   //WRITE TO PAGE:
+
+  /*
+  <div class="accordion-item">
+    <h2 class="accordion-header">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${index}" aria-expanded="true" aria-controls="collapse${index}">
+        Accordion Item #1
+      </button>
+    </h2>
+    <div id="collapse${index}" class="accordion-collapse collapse show" data-bs-parent="#obs-accordion">
+      <div class="accordion-body">
+        <strong>This is the first item's accordion body.</strong> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+      </div>
+    </div>
+  </div>
+  */
   const displayAuthors = (authors) => {
-    /*authors.forEach(({ species_guess, identifications}, index) => {
+
+    authors.forEach(({ species_guess, identifications, geojson, uri}, index) => {
+      let taxon = identifications[0].taxon.iconic_taxon_name;
+      let img_url = identifications[0].taxon.default_photo.url;
+      let coord = geojson.coordinates;
+      authorContainer.innerHTML += `
+      <div class="accordion-item">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${index}" aria-expanded="true" aria-controls="collapse${index}">
+        #${index+1}: ${species_guess} ${get_Icon(taxon)}
+      </button>
+    </h2>
+    <div id="collapse${index}" class="accordion-collapse collapse" data-bs-parent="#obs-accordion">
+      <div class="accordion-body">
+      ${taxon}
+      <img src="${img_url}" />
+      Coordinates: ${coord}
+      <a href="${uri}" target="_blank">Link</a>
+      </div>
+    </div>
+  </div>
+    `;
+    });
+
+
+/*
+    authors.forEach(({ species_guess, identifications}, index) => {
       authorContainer.innerHTML += `
       <div id="${index}" class="user-card">
         <h2 class="author-name">${species_guess}</h2>
@@ -59,24 +116,10 @@ const fetchMoreAuthors = () => {
         <p>When: ${identifications[0].taxon.iconic_taxon_name}</p>
       </div>
     `;
-    });*/
-    authors.forEach(({ species_guess, identifications}, index) => {
-        authorContainer.innerHTML += `
-        <div class="accordion-item">
-                  <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
-                      ${Index}: ${species_guess}
-                    </button>
-                  </h2>
-                  <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
-                    <div class="accordion-body">
-                    ${identifications[0].taxon.iconic_taxon_name}
-                    </div>
-                  </div>
-                </div>
-      `;
-      });
+    });
+*/
+
 
   };
   
-  loadMoreBtn.addEventListener('click', fetchMoreAuthors);
+  //loadMoreBtn.addEventListener('click', fetchMoreAuthors);
