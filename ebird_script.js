@@ -1,9 +1,11 @@
+
+
 const authorContainer = document.getElementById('author-container');
 const loadMoreBtn = document.getElementById('load-more-btn');
 const hotspot = 'L1041285';
 document.getElementById('title').innerHTML+= hotspot;
 var myHeaders = new Headers();
-myHeaders.append('X-eBirdApiToken', 'h7ef2kl07ipp');
+myHeaders.append('X-eBirdApiToken', TOKEN);
 
 var requestOptions = {
   method: 'GET',
