@@ -20,12 +20,13 @@ var requestOptions = {
   //redirect: 'follow'
 };
 //CALL TO EBIRD
+
 Promise.all(hotspots.map(hot=>fetch('https://api.ebird.org/v2/data/obs/'+hot+'/recent', requestOptions)))
 .then(responses =>
   Promise.all(responses.map(res => res.json())) //READ RESPONSES AS JSON
 ).then((data) => {
   rawData = data.flat(); //ABOVE RETURNS LIST OF LISTS (each hotspot), FLATTEN TO SINGLE LIST
-  addToObs(rawData); //CALL FUNCTION TO FORMAT DATA 
+  addToObseBird(rawData); //CALL FUNCTION TO FORMAT DATA 
 })
 .then((data) =>{
 displayAuthors(observations); //CALL FUNCTION TO WRITE DATA TO PAGE
@@ -35,47 +36,43 @@ console.error(`There was an error: ${err}`);
 });
 
 
-/*
-//FETCH JUST ONE HOTSPOT
-fetch("https://api.ebird.org/v2/data/obs/"+hotspot+"/recent", requestOptions)
-    .then((res) => res.json())
-    .then((data) => {
-        rawData = data;
-        addToObs(rawData);
-      })
-    .then((data) =>{
-      displayAuthors(observations);
-    })
-  .catch((err) => {
-    console.error(`There was an error: ${err}`);
-  });
-*/
-
 //add link, uri
 class Observation {
-  constructor(comName, sciName, lat, lng, date, taxon) { 
+  constructor(comName, sciName, taxon, lat, lng, date) { 
     this.comName = comName;
     this.sciName = sciName;
+    this.taxon = taxon;
     this.lat = lat;
     this.lng = lng;
     this.date = date;
-    this.taxon = 'Aves'
   }
 }
-const addToObs = (data) => {
-  data.forEach(({ comName, sciName, lat, lng, obsDt,taxon }, index) => {
-    observations.push(new Observation(comName, sciName, lat, lng, obsDt,taxon));
+
+class eBirdObs extends Observation {
+  constructor(comName, sciName, taxon, lat, lng, date, hotspot,locName){
+    super(comName, sciName, taxon, lat, lng, date);
+    this.hotspot=hotspot;
+    this.uri = "https://ebird.org/hotspot/"+hotspot;
+    this.locName = locName;
+  }
+}
+
+const addToObseBird = (data) => {
+  data.forEach(({ comName, sciName, lat, lng, obsDt,taxon,locId,locName }, index) => {
+    let date = new Date(obsDt);
+    observations.push(new eBirdObs(comName, sciName, "Aves", lat, lng, date,locId,locName));
   });
 };
 const displayAuthors = (obs) => {
-  console.log('Num: ' + obs.length);
+  obs = obs.sort((a,b)=>b.date - a.date);
   obs.forEach((ob, index) => {
     authorContainer.innerHTML += `
     <div id="" class="user-card">
-      <h2 class="author-name">${index}. ${ob.comName}</h2>
+      <h2 class="author-name">${index}. ${ob.comName}, ${ob.taxon}</h2>
       <div class="purple-divider"></div>
       <p class="bio">${ob.sciName.length > 50 ? ob.sciName.slice(0, 50) + '...' : ob.sciName}</p>
       <p>When: ${ob.date}</p>
+      <p>Where: <a href="${ob.uri}">${ob.locName}</a></p>
     </div>
   `;
   });

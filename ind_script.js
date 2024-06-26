@@ -4,15 +4,24 @@ const loadMoreBtn = document.getElementById('load-more-btn');
 const observations = [];
 
 class Observation {
-  constructor(comName, sciName, lat, lng, date, taxon) { 
+  constructor(comName, sciName, taxon, lat, lng, date) { 
     this.comName = comName;
     this.sciName = sciName;
+    this.taxon = taxon;
     this.lat = lat;
     this.lng = lng;
-    this.taxon = taxon;
     this.date = date;
   }
 }
+class iNatObs extends Observation {
+  constructor(comName, sciName, taxon, lat, lng, date, uri, img){
+    super(comName, sciName, taxon, lat, lng, date);
+    this.uri = uri;
+    this.img = img;
+  }
+}
+
+//image, uri
 
 function get_Icon(tax){
   switch(tax){
@@ -57,7 +66,7 @@ fetch("https://api.inaturalist.org/v1/observations?place_id=155264&order_by=crea
     .then((data) => {
         //STORE
         rawData = data["results"];
-        addToObs(rawData);
+        addToObsiNat(rawData);
         //WRITE
         //displayAuthors(rawData);
       }).then((data) =>{
@@ -82,24 +91,28 @@ const fetchMoreAuthors = () => {
     }
   };
 
-  const addToObs = (data) => {
-    data.forEach(({identifications, observed_on_details, geojson, uri}, index) => {
+  const addToObsiNat = (data) => {
+    data.forEach(({identifications, observed_on_details, geojson, uri, taxon}, index) => {
       //constructor(comName, sciName, lat, lng, taxon)
       if (identifications.length > 0){
-        let taxon = identifications[0].taxon.iconic_taxon_name;
+        let group = identifications[0].taxon.iconic_taxon_name;
         if (taxon != "Aves"){
           let comName = identifications[0].taxon.preferred_common_name;
           let sciName = identifications[0].taxon.name;
           let lat = geojson.coordinates[0];
           let lng = geojson.coordinates[1];
-          let date = observed_on_details.date +" hour: "+ observed_on_details.hour;
-          observations.push(new Observation(comName, sciName, lat, lng, date, taxon));
+          let date = new Date(observed_on_details.year,observed_on_details.month-1, observed_on_details.day, observed_on_details.hour);
+          let link = uri;
+          console.log(taxon.default_photo);
+          let img = taxon.default_photo.medium_url;
+          observations.push(new iNatObs(comName, sciName, group, lat, lng, date, link, img));
         }
     }
     });
   };
   
   const displayAuthors = (obs) => {
+    obs = obs.sort((a,b)=>b.date - a.date);
     obs.forEach((ob, index) => {
       obsContainer.innerHTML += `
       <div class="accordion-item">
@@ -113,8 +126,9 @@ const fetchMoreAuthors = () => {
       ${ob.sciName}
       <br />
       ${ob.taxon}
-      Coordinates: ${ob.lat}
-      <a href="" target="_blank">${ob.date}</a>
+      Coordinates: ${ob.lat}, ${ob.lng}
+      <a href="${ob.uri}" target="_blank">${ob.date.toString()}</a>
+      <p><img class="img-fluid" src="${ob.img}" /></p>
       </div>
     </div>
   </div>
