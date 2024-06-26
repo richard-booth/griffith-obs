@@ -1,7 +1,18 @@
 //Place id: 155264
-const authorContainer = document.getElementById('obs-accordion');
+const obsContainer = document.getElementById('obs-accordion');
 const loadMoreBtn = document.getElementById('load-more-btn');
-const hotspot = 'L1041285';
+const observations = [];
+
+class Observation {
+  constructor(comName, sciName, lat, lng, date, taxon) { 
+    this.comName = comName;
+    this.sciName = sciName;
+    this.lat = lat;
+    this.lng = lng;
+    this.taxon = taxon;
+    this.date = date;
+  }
+}
 
 function get_Icon(tax){
   switch(tax){
@@ -17,6 +28,9 @@ function get_Icon(tax){
     case "Reptilia":
       return '<i class="fa-solid fa-worm"></i>';
       break;
+    case "Aves":
+        return '<i class="fa-solid fa-dove"></i>';
+        break;
     default:
       return '<i class="fa-solid fa-dragon"></i>';
   }
@@ -34,17 +48,21 @@ var requestOptions = {
 let startingIndex = 0;
 let endingIndex = 10;
 //INITIALIZE DATA ARRAY
-let authorDataArr = [];
+let rawData = [];
+
 //MAKE REQUEST, STORE DATA IN ARRAY, WRITE TO PAGE 
 //https://api.inaturalist.org/v1/observations?order=desc&order_by=created_at
 fetch("https://api.inaturalist.org/v1/observations?place_id=155264&order_by=created_at&order=desc")
     .then((res) => res.json())
     .then((data) => {
         //STORE
-        authorDataArr = data["results"];
+        rawData = data["results"];
+        addToObs(rawData);
         //WRITE
-        displayAuthors(authorDataArr.slice(startingIndex, endingIndex));
-      })
+        //displayAuthors(rawData);
+      }).then((data) =>{
+        displayAuthors(observations); //CALL FUNCTION TO WRITE DATA TO PAGE
+        })
   .catch((err) => {
     console.error(`There was an error: ${err}`);
   });
@@ -56,70 +74,51 @@ const fetchMoreAuthors = () => {
     startingIndex += 10;
     endingIndex += 10;
   
-    displayAuthors(authorDataArr.slice(startingIndex, endingIndex));
-    if (authorDataArr.length <= endingIndex) {
+    displayAuthors(rawData.slice(startingIndex, endingIndex));
+    if (rawData.length <= endingIndex) {
       loadMoreBtn.disabled = true;
   
       loadMoreBtn.textContent = 'No more data to load';
     }
   };
 
-  //WRITE TO PAGE:
-
-  /*
-  <div class="accordion-item">
-    <h2 class="accordion-header">
-      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${index}" aria-expanded="true" aria-controls="collapse${index}">
-        Accordion Item #1
-      </button>
-    </h2>
-    <div id="collapse${index}" class="accordion-collapse collapse show" data-bs-parent="#obs-accordion">
-      <div class="accordion-body">
-        <strong>This is the first item's accordion body.</strong> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-      </div>
-    </div>
-  </div>
-  */
-  const displayAuthors = (authors) => {
-
-    authors.forEach(({ species_guess, identifications, geojson, uri}, index) => {
-      let taxon = identifications[0].taxon.iconic_taxon_name;
-      let img_url = identifications[0].taxon.default_photo.url;
-      let coord = geojson.coordinates;
-      authorContainer.innerHTML += `
+  const addToObs = (data) => {
+    data.forEach(({identifications, observed_on_details, geojson, uri}, index) => {
+      //constructor(comName, sciName, lat, lng, taxon)
+      if (identifications.length > 0){
+        let taxon = identifications[0].taxon.iconic_taxon_name;
+        if (taxon != "Aves"){
+          let comName = identifications[0].taxon.preferred_common_name;
+          let sciName = identifications[0].taxon.name;
+          let lat = geojson.coordinates[0];
+          let lng = geojson.coordinates[1];
+          let date = observed_on_details.date +" hour: "+ observed_on_details.hour;
+          observations.push(new Observation(comName, sciName, lat, lng, date, taxon));
+        }
+    }
+    });
+  };
+  
+  const displayAuthors = (obs) => {
+    obs.forEach((ob, index) => {
+      obsContainer.innerHTML += `
       <div class="accordion-item">
     <h2 class="accordion-header">
       <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${index}" aria-expanded="true" aria-controls="collapse${index}">
-        #${index+1}: ${species_guess} ${get_Icon(taxon)}
+        #${index+1}: ${ob.comName} ${get_Icon(ob.taxon)}
       </button>
     </h2>
     <div id="collapse${index}" class="accordion-collapse collapse" data-bs-parent="#obs-accordion">
       <div class="accordion-body">
-      ${taxon}
-      <img src="${img_url}" />
-      Coordinates: ${coord}
-      <a href="${uri}" target="_blank">Link</a>
+      ${ob.sciName}
+      <br />
+      ${ob.taxon}
+      Coordinates: ${ob.lat}
+      <a href="" target="_blank">${ob.date}</a>
       </div>
     </div>
   </div>
     `;
     });
-
-
-/*
-    authors.forEach(({ species_guess, identifications}, index) => {
-      authorContainer.innerHTML += `
-      <div id="${index}" class="user-card">
-        <h2 class="author-name">${species_guess}</h2>
-        <div class="purple-divider"></div>
-        <p class="bio">${species_guess.length > 50 ? species_guess.slice(0, 50) + '...' : species_guess}</p>
-        <p>When: ${identifications[0].taxon.iconic_taxon_name}</p>
-      </div>
-    `;
-    });
-*/
-
-
   };
   
-  //loadMoreBtn.addEventListener('click', fetchMoreAuthors);

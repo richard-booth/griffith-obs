@@ -24,7 +24,7 @@ Promise.all(hotspots.map(hot=>fetch('https://api.ebird.org/v2/data/obs/'+hot+'/r
 .then(responses =>
   Promise.all(responses.map(res => res.json())) //READ RESPONSES AS JSON
 ).then((data) => {
-  rawData = data.flat(); //ABOVE RETURNS LIST OF LISTS, FLATTEN TO SINGLE LIST
+  rawData = data.flat(); //ABOVE RETURNS LIST OF LISTS (each hotspot), FLATTEN TO SINGLE LIST
   addToObs(rawData); //CALL FUNCTION TO FORMAT DATA 
 })
 .then((data) =>{
@@ -51,32 +51,20 @@ fetch("https://api.ebird.org/v2/data/obs/"+hotspot+"/recent", requestOptions)
   });
 */
 
-/*
-const fetchMoreAuthors = () => {
-    startingIndex += 8;
-    endingIndex += 8;
-  
-    displayAuthors(rawData.slice(startingIndex, endingIndex));
-    if (rawData.length <= endingIndex) {
-      loadMoreBtn.disabled = true;
-  
-      loadMoreBtn.textContent = 'No more data to load';
-    }
-  };
-  */
 //add link, uri
 class Observation {
-  constructor(comName, sciName, lat, lng, date) { 
+  constructor(comName, sciName, lat, lng, date, taxon) { 
     this.comName = comName;
     this.sciName = sciName;
     this.lat = lat;
     this.lng = lng;
     this.date = date;
+    this.taxon = 'Aves'
   }
 }
 const addToObs = (data) => {
-  data.forEach(({ comName, sciName, lat, lng, obsDt }, index) => {
-    observations.push(new Observation(comName, sciName, lat, lng, obsDt));
+  data.forEach(({ comName, sciName, lat, lng, obsDt,taxon }, index) => {
+    observations.push(new Observation(comName, sciName, lat, lng, obsDt,taxon));
   });
 };
 const displayAuthors = (obs) => {
@@ -92,19 +80,3 @@ const displayAuthors = (obs) => {
   `;
   });
 };
-console.log(observations.length);
-  
-/*const displayAuthors = (authors) => {
-    authors.forEach(({ comName, sciName,obsDt }, index) => {
-      authorContainer.innerHTML += `
-      <div id="${index}" class="user-card">
-        <h2 class="author-name">${comName}</h2>
-        <div class="purple-divider"></div>
-        <p class="bio">${sciName.length > 50 ? sciName.slice(0, 50) + '...' : sciName}</p>
-        <p>When: ${obsDt}</p>
-      </div>
-    `;
-    });
-  };*/
-  
-//loadMoreBtn.addEventListener('click', fetchMoreAuthors);
