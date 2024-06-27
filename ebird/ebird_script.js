@@ -10,6 +10,26 @@ myHeaders.append('X-eBirdApiToken', TOKEN);
 const hotspots = ['L1041285', 'L3058433','L1622759','L380915','L2198410','L22937810','L823886','L16320572','L6528214'];
 
 
+class Observation {
+  constructor(comName, sciName, taxon, lat, lng, date) { 
+    this.comName = comName;
+    this.sciName = sciName;
+    this.taxon = taxon;
+    this.lat = lat;
+    this.lng = lng;
+    this.date = date;
+  }
+}
+
+class eBirdObs extends Observation {
+  constructor(comName, sciName, taxon, lat, lng, date, hotspot,locName){
+    super(comName, sciName, taxon, lat, lng, date);
+    this.hotspot=hotspot;
+    this.uri = "https://ebird.org/hotspot/"+hotspot;
+    this.locName = locName;
+  }
+}
+
 
 //INITIALIZE STORE OF FETCHED DATA
 let rawData = [];
@@ -35,27 +55,6 @@ displayAuthors(observations); //CALL FUNCTION TO WRITE DATA TO PAGE
 console.error(`There was an error: ${err}`);
 });
 
-
-//add link, uri
-class Observation {
-  constructor(comName, sciName, taxon, lat, lng, date) { 
-    this.comName = comName;
-    this.sciName = sciName;
-    this.taxon = taxon;
-    this.lat = lat;
-    this.lng = lng;
-    this.date = date;
-  }
-}
-
-class eBirdObs extends Observation {
-  constructor(comName, sciName, taxon, lat, lng, date, hotspot,locName){
-    super(comName, sciName, taxon, lat, lng, date);
-    this.hotspot=hotspot;
-    this.uri = "https://ebird.org/hotspot/"+hotspot;
-    this.locName = locName;
-  }
-}
 
 const addToObseBird = (data) => {
   data.forEach(({ comName, sciName, lat, lng, obsDt,taxon,locId,locName }, index) => {
