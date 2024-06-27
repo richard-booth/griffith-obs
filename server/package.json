@@ -1,18 +1,20 @@
+// server/package.json
 {
   "name": "griffith",
   "version": "1.0.0",
   "main": "ind_script.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node server/index.js",
+    "build": "cd client && npm install && npm run build"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "express": "^4.19.2"
   },
   "engines": {
     "node": "20.15.0"
-  }
+  },
+  "description": ""
 }
