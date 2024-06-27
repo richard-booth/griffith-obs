@@ -8,7 +8,7 @@ const observations = [];
 
 //set ebird headers and options
 var myHeaders = new Headers();
-myHeaders.append('X-eBirdApiToken', TOKEN);
+myHeaders.append('X-eBirdApiToken', ebird_TOKEN);
 var requestOptions = {
   method: 'GET',
   headers: myHeaders,
@@ -133,7 +133,7 @@ fetch("https://api.inaturalist.org/v1/observations?place_id=155264&order_by=crea
   };
 function mapUpdate(lat, lng){
   frame = document.getElementById('map-frame');
-  frame.src="https://www.google.com/maps/embed/v1/place?key=AIzaSyC-DruQnDKG2dCSA8VecjeqdXVLc7Vt2d4&zoom=14&q="+lat.toString()+","+lng.toString();
+  frame.src="https://www.google.com/maps/embed/v1/place?key="+google_KEY+"&zoom=14&q="+lat.toString()+","+lng.toString();
 }
 
   function reloadObs(obs, type){
