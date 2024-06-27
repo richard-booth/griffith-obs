@@ -34,13 +34,14 @@ class iNatObs extends Observation {
   }
 }
 class eBirdObs extends Observation {
-  constructor(comName, sciName, taxon, lat, lng, date, hotspot,locName){
+  constructor(comName, sciName, taxon, lat, lng, date, hotspot,locName,speciesCode){
     super(comName, sciName, taxon, lat, lng, date);
     this.hotspot=hotspot;
     this.uri = "https://ebird.org/hotspot/"+hotspot;
     this.locName = locName;
-    this.img = "https://cdn.download.ams.birds.cornell.edu/api/v2/asset/134118971/480";
-    this.type = "eBird"
+    this.img = (typeof imgs[speciesCode] !== 'undefined')? imgs[speciesCode].src : "https://cdn.download.ams.birds.cornell.edu/api/v2/asset/134118971/480";
+    this.type = "eBird";
+    this.code = speciesCode;
   }
 }
 
@@ -69,7 +70,7 @@ fetch("https://api.inaturalist.org/v1/observations?place_id=155264&order_by=crea
         })
       })
       .then((data) =>{
-        displayAuthors(observations.slice(0,100)); //CALL FUNCTION TO WRITE DATA TO PAGE
+        displayObs(observations.slice(0,100)); //CALL FUNCTION TO WRITE DATA TO PAGE
         })
   .catch((err) => {
     console.error(`There was an error: ${err}`);
@@ -85,8 +86,8 @@ fetch("https://api.inaturalist.org/v1/observations?place_id=155264&order_by=crea
         if (taxon != "Aves"){
           let comName = identifications[0].taxon.preferred_common_name;
           let sciName = identifications[0].taxon.name;
-          let lat = geojson.coordinates[0];
-          let lng = geojson.coordinates[1];
+          let lat = geojson.coordinates[1];
+          let lng = geojson.coordinates[0];
           let date = new Date(observed_on_details.year,observed_on_details.month-1, observed_on_details.day, observed_on_details.hour);
           let link = uri;
           console.log(taxon.default_photo);
@@ -97,29 +98,32 @@ fetch("https://api.inaturalist.org/v1/observations?place_id=155264&order_by=crea
     });
   };
   const addToObseBird = (data) => {
-    data.slice(0,30).forEach(({ comName, sciName, lat, lng, obsDt,taxon,locId,locName }, index) => {
+    data.slice(0,30).forEach(({ comName, sciName, lat, lng, obsDt,taxon,locId,locName, speciesCode }, index) => {
       let date = new Date(obsDt);
-      observations.push(new eBirdObs(comName, sciName, "Aves", lat, lng, date,locId,locName));
+      observations.push(new eBirdObs(comName, sciName, "Aves", lat, lng, date,locId,locName, speciesCode));
     });
   };
   
-  const displayAuthors = (obs) => {
+  const displayObs = (obs) => {
     obs = obs.sort((a,b)=>b.date - a.date);
     obs.forEach((ob, index) => {
       obsContainer.innerHTML += `
       <div class="accordion-item">
     <h2 class="accordion-header">
-      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${index}" aria-expanded="true" aria-controls="collapse${index}">
-        #${index+1}: ${ob.comName} ${get_Icon(ob.taxon)}
+      <button class="accordion-button collapsed justify-content-between" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${index}" aria-expanded="true" aria-controls="collapse${index}">
+      ${get_Icon(ob.taxon)}  &nbsp;  &nbsp; ${toTitleCase(ob.comName)} 
       </button>
     </h2>
     <div id="collapse${index}" class="accordion-collapse collapse" data-bs-parent="#obs-accordion">
       <div class="accordion-body">
-      ${ob.sciName}
-      <br />
-      ${ob.taxon}
-      Coordinates: ${ob.lat}, ${ob.lng}
-      <a href="${ob.uri}" target="_blank">${ob.date.toString()}</a>
+      <p> Scientific name: <em>${ob.sciName}</em>.</p>
+      <p>
+        <a href="#" onclick="mapUpdate(`+ob.lat+','+ob.lng+`);return false;">Show map location</a>.
+        </p>
+      <p>Date: ${ob.date.toString()}</p>
+      <p>
+      <a href="${ob.uri}" target="_blank">Open ${ob.type === 'iNat'? 'observation on iNaturalist' : 'hotspot on eBird'}</a>.
+      </p>
       <p><img class="img-fluid" src="${ob.img}" /></p>
       </div>
     </div>
@@ -127,7 +131,29 @@ fetch("https://api.inaturalist.org/v1/observations?place_id=155264&order_by=crea
     `;
     });
   };
-  
+function mapUpdate(lat, lng){
+  frame = document.getElementById('map-frame');
+  frame.src="https://www.google.com/maps/embed/v1/place?key=AIzaSyC-DruQnDKG2dCSA8VecjeqdXVLc7Vt2d4&zoom=14&q="+lat.toString()+","+lng.toString();
+}
+
+  function reloadObs(obs, type){
+    obsContainer.innerHTML = "";
+    switch(type){
+      case 'eBird':
+        displayObs(obs.filter((ob) =>ob.type==='eBird')); 
+        document.getElementById("obs-title").innerHTML="eBird:";
+        break;
+      case 'iNat':
+        displayObs(obs.filter((ob) =>ob.type==='iNat'));
+        document.getElementById("obs-title").innerHTML="iNaturalist:";
+        break;
+      default:
+        displayObs(obs);
+        document.getElementById("obs-title").innerHTML="iNaturalist + eBird:";
+       
+    }
+  }
+
   function get_Icon(tax){
     switch(tax){
       case "Plantae":
@@ -148,4 +174,11 @@ fetch("https://api.inaturalist.org/v1/observations?place_id=155264&order_by=crea
       default:
         return '<i class="fa-solid fa-dragon"></i>';
     }
+  }
+
+  function toTitleCase(str) {
+    return str.replace(
+      /\w\S*/g,
+      text => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase()
+    );
   }

@@ -26,18 +26,18 @@
     <div class="row">
         <div class="col-md-5 outline">
             <div class="row justify-content-md-between">
-            <div class="col-md-3 outline justify-content-md-end">
-                <h4 style="font-family: 'Futura';" class="align-text-bottom text-secondary outline">iNaturalist:</h4>
+            <div class="col-md-8 outline justify-content-md-end">
+                <h4 id="obs-title" style="font-family: 'Futura';" class="align-text-bottom text-secondary outline">iNaturalist + eBird:</h4>
                 </div>
             <div class="col-md-4 outline text-end">
                 <div class="dropdown">
-                    <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                      All
+                    <button onclick="" class="btn btn-secondary btn-sm dropdown-toggle" type="button" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      Source:
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="#">Action</a></li>
-                        <li><a class="dropdown-item" href="#">Another action</a></li>
-                        <li><a class="dropdown-item" href="#">Something else here</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="reloadObs(observations, 'eBird');">eBird</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="reloadObs(observations, 'iNat');">iNaturalist</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="reloadObs(observations, 'All');">All</a></li>
                       </ul>
                   </div>
             </div>
@@ -47,9 +47,20 @@
             </div> 
             </div>
         <div class="col-md-7 " id="map-box">
-            <div class="ratio ratio-1x1">
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d39528.933532299176!2d-118.32595584416451!3d34.133699724483954!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80c2c08d21749ff7%3A0x4731b4ee89bae4aa!2sGriffith%20Park!5e0!3m2!1sen!2sus!4v1719249926074!5m2!1sen!2sus" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>        </div>
+            <div class="ratio ratio-1x1"  style="position: sticky; top: 0px;">
+                <iframe id="map-frame" loading="lazy"
+                allowfullscreen
+                referrerpolicy="no-referrer-when-downgrade"
+                src="https://www.google.com/maps/embed/v1/place?key=AIzaSyC-DruQnDKG2dCSA8VecjeqdXVLc7Vt2d4
+                  &zoom=14&q=34.135765737042696,-118.29439933943323" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>        
+                <!--<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d39528.933532299176!2d-118.32595584416451!3d34.133699724483954!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80c2c08d21749ff7%3A0x4731b4ee89bae4aa!2sGriffith%20Park!5e0!3m2!1sen!2sus!4v1719249926074!5m2!1sen!2sus" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>        
+            -->
+            </div>
       </div>
+    <script>
+        const API_KEY = 'AIzaSyC-DruQnDKG2dCSA8VecjeqdXVLc7Vt2d4';
+    </script>
+    <script src="./ebird/imgs.js"></script>
     <script src="./ebird/ebird_key.js"></script>
     <script src="./ind_script.js"></script>
 </body>
