@@ -83,7 +83,7 @@ fetch("https://api.inaturalist.org/v1/observations?place_id=155264&order_by=crea
       //constructor(comName, sciName, lat, lng, taxon)
       if (identifications.length > 0){
         let group = identifications[0].taxon.iconic_taxon_name;
-        if (taxon != "Aves"){
+        if (taxon != "Aves" && identifications[0].taxon.preferred_common_name){
           let comName = identifications[0].taxon.preferred_common_name;
           let sciName = identifications[0].taxon.name;
           let lat = geojson.coordinates[1];

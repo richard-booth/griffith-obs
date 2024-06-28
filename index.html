@@ -3,9 +3,6 @@
 <head>
     <style>
         .outline {border: 0px solid red}
-        #map-box div {
-            margin-top: 1px;
-        }
     </style>
         <!-- Font Awesome Icons -->
         <script src="https://kit.fontawesome.com/0d0a593f86.js" crossorigin="anonymous"></script>
@@ -24,12 +21,20 @@
     <h1 style="font-family: 'Futura';"><i class="fa-solid fa-binoculars"></i> Griffith Park Observations</h1>
 </header>
     <div class="row">
-        <div class="col-md-5 outline">
-            <div class="row justify-content-md-between">
-            <div class="col-md-8 outline justify-content-md-end">
-                <h4 id="obs-title" style="font-family: 'Futura';" class="align-text-bottom text-secondary outline">iNaturalist + eBird:</h4>
+        <div class="col-md-7 order-md-2" id="map-box">
+            <div class="ratio ratio-1x1"  style="position: sticky; top: 0px;">
+                <iframe id="map-frame" loading="lazy"
+                allowfullscreen
+                referrerpolicy="no-referrer-when-downgrade"
+                src="" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+      </div>
+        <div class="col-md-5 order-md-1">
+            <div class="row justify-content-sm-between outline">
+            <div class="col-8 justify-content-md-end outline">
+                <h4 id="obs-title" style="font-family: 'Futura';" class="align-text-bottom text-secondary">iNaturalist + eBird:</h4>
                 </div>
-            <div class="col-md-4 outline text-end">
+            <div class="col-4 text-end outline">
                 <div class="dropdown">
                     <button onclick="" class="btn btn-secondary btn-sm dropdown-toggle" type="button" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                       Source:
@@ -46,14 +51,7 @@
             <div id="obs-accordion" class="accordion accordion-flush" id="accordionFlushExample">
             </div> 
             </div>
-        <div class="col-md-7 " id="map-box">
-            <div class="ratio ratio-1x1"  style="position: sticky; top: 0px;">
-                <iframe id="map-frame" loading="lazy"
-                allowfullscreen
-                referrerpolicy="no-referrer-when-downgrade"
-                src="" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-            </div>
-      </div>
+        
 
     <script src="./api_keys.js"></script>   
     <script src="./ebird_test/imgs.js"></script>
