@@ -22,6 +22,6 @@ The `mapUpdate` function uses a Google Maps API key stored in the file "api_keys
 
 The index.html page is formatted using the Bootstrap 5.3.3 library, with icons from Font Awesome.
 
-# The Next Version in progress.
+# The next version (in progress).
 
 The plan for the next version of the site is to move to a Node / MongoDB / React framework in order to make the API calls on the backend, store data in a database, and add more functionality and data visualization on the front end.
