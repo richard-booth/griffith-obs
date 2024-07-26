@@ -1,5 +1,5 @@
 # About
-This site is meant to be a one-stop shop for recent flora and fauna observations in Griffith Park.
+This site is meant to be a one-stop shop for recent flora and fauna observations in Griffith Park. It draws data from two sources: eBird and iNaturalist.
 
 A live demo can be found [here](https://griffith-ad4288b76856.herokuapp.com/).
 
